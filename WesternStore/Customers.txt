@@ -1,0 +1,3 @@
+﻿Knatte;123;
+Fnatte;321;
+Tjatte;213;
