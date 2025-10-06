@@ -1,4 +1,5 @@
-﻿namespace WesternStore
+﻿using WesternStore.CustomerRanks;
+namespace WesternStore
 {
     internal class Program
     {
@@ -7,8 +8,7 @@
 
             StoreHelper store = new StoreHelper();
 
-
-            string FilePath = "customer.txt";
+            string FilePath = "customers.txt";
             var customers = new List<Customer>();
 
             if (File.Exists(FilePath))
@@ -21,12 +21,11 @@
                         var parts = line.Split(';');
                         if (parts.Length >= 2)
                         {
-                            customers.Add(new Customer(parts[0], parts[1]));
+                            customers.Add(new RegularCustomer(parts[0], parts[1]));
                         }
                     }
                 }
             }
-
 
             MenuService menuService = new MenuService(store, customers);
 

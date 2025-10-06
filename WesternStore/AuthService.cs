@@ -1,10 +1,11 @@
-﻿namespace WesternStore
+﻿using WesternStore.CustomerRanks;
+
+namespace WesternStore
 {
     public static class AuthService
     {
 
-        private const string FilePath = "customer.txt";
-
+        private const string FilePath = "customers.txt";
 
         public static void RegisterCustomer(List<Customer> customers)
         {
@@ -21,6 +22,7 @@
             if (isRegistered)
             {
                 Console.WriteLine("Customer created! ");
+
                 using (StreamWriter sw = new StreamWriter(FilePath, append: true))
                 {
                     sw.WriteLine($"{name};{password}");
@@ -70,7 +72,7 @@
                     Console.ReadKey();
                     continue;
                 }
-                Console.WriteLine($"\nLogIn succesful. Welcome {customer.Name}");
+                Console.WriteLine($"\nLogIn succesful. Welcome {customer.Name}!");
                 Console.ReadKey();
                 return customer;
             }
@@ -101,7 +103,7 @@
                     return false;   //registrering misslyckades 
                 }
             }
-            customers.Add(new Customer(name, password));
+            customers.Add(new RegularCustomer(name, password));
             return true;  //registering lyckasdess. 
         }
 

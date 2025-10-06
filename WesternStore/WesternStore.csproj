@@ -8,9 +8,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="Customers.txt">
+    <None Remove="Customers.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Customers.txt">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Program.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
   </ItemGroup>
 
 </Project>

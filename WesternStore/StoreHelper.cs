@@ -1,4 +1,5 @@
-﻿using WesternStore.Products;
+﻿using WesternStore.CustomerLevel;
+using WesternStore.Products;
 
 namespace WesternStore
 {
@@ -15,7 +16,7 @@ namespace WesternStore
 
                 Console.Clear();
                 Console.WriteLine("=== SHOP ===\n");
-                Console.WriteLine("[1] Clothes  [2] Horse Tack  [3] Supplies  [4] Back ");
+                Console.WriteLine("[1] Clothes  [2] Horse Tack  [3] Supplies  [0] Back ");
                 Console.Write("\nEnter choice: ");
                 string choice = Console.ReadLine();
 
@@ -30,7 +31,7 @@ namespace WesternStore
                     case "3":
                         currentList = ListsOfProducts.Get<Supplies>().Cast<Product>().ToList();
                         break;
-                    case "4":
+                    case "0":
                         return;
                     default:
                         Console.WriteLine("Invalid choice. Press any key to try again!");
@@ -98,7 +99,7 @@ namespace WesternStore
                 while (true)
                 {
                     Console.Write("Amount: ");
-                    string input = Console.ReadLine();
+                    string? input = Console.ReadLine();
 
                     if (int.TryParse(input, out amount) && amount > 0)
                     {
@@ -132,7 +133,7 @@ namespace WesternStore
         }
 
 
-        public static void CheckOut(Customer customer)
+        public static Customer CheckOut(Customer customer)
         {
             Console.Clear();
             Console.WriteLine("=== CHECKOUT ===");
@@ -143,7 +144,7 @@ namespace WesternStore
             {
                 Console.Write("\n The cart is empty. Press any key to go back...");
                 Console.ReadKey();
-                return;
+                return customer;
 
             }
 
@@ -152,16 +153,41 @@ namespace WesternStore
 
             if (answer == "yes" || answer == "Yes")
             {
-                Console.Write("Thank you for your purchase.");
+                double total = customer.Total();
+                double discountTotal = customer.CalculateDiscount(total);
+                Console.WriteLine("\n=== RECEIPT ===");
+                Console.WriteLine($"Original total: {total} kr");
+                Console.WriteLine($"Discount total: {discountTotal} kr");
+
+                customer.AddSpent(discountTotal);
+                string newLevel = Customer.TargetLevel(customer.TotalSpent);
+
+                if (newLevel == "Gold" && customer is not GoldCustomer)
+                    customer = new GoldCustomer(customer.Name, customer.GetPassword());
+                else if (newLevel == "Silver" && customer is not SilverCustomer)
+                    customer = new SilverCustomer(customer.Name, customer.GetPassword());
+                else if (newLevel == "Bronze" && customer is not BronzeCustomer)
+                    customer = new BronzeCustomer(customer.Name, customer.GetPassword());
+
+
+                Console.Write("\nThank you for your purchase.");
                 customer.ClearCart();
+                Console.Write("\nPress any key to continue...");
+                Console.ReadKey();
+                return customer;
             }
             else
             {
-                Console.WriteLine("Order cancelled.");
+                Console.WriteLine("\nOrder cancelled.");
+                Console.Write("\nPress any key to continue...");
+                Console.ReadKey();
+                return customer;
 
             }
-            Console.Write("\nPress any key to continue...");
-            Console.ReadKey();
+
         }
+
+
+
     }
 }

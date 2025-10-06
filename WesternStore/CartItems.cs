@@ -17,5 +17,9 @@ namespace WesternStore
         {
             return Product.Price * Amount;
         }
+        public void Add(int amount)
+        {
+            Amount += amount;
+        }
     }
 }

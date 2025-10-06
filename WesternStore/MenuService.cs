@@ -26,7 +26,7 @@
                 Console.WriteLine("[3] Exit shop");
                 Console.WriteLine("-------------------------------------");
                 Console.Write("\nEnter choice: ");
-                string choice = Console.ReadLine();
+                string? choice = Console.ReadLine();
 
                 switch (choice)
                 {
@@ -67,7 +67,7 @@
                 Console.WriteLine("[0] Log Out");
                 Console.WriteLine("-------------------------------------");
                 Console.Write("\nEnter choice: ");
-                string choice = Console.ReadLine();
+                string? choice = Console.ReadLine();
 
                 switch (choice)
                 {
@@ -78,7 +78,7 @@
                         StoreHelper.ViewCart(customer);
                         break;
                     case "3":
-                        StoreHelper.CheckOut(customer);
+                        customer = StoreHelper.CheckOut(customer);
                         break;
                     case "0":
                         return;
