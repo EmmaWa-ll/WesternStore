@@ -13,7 +13,6 @@ namespace WesternStore
 
             while (true)
             {
-
                 Console.Clear();
                 Console.WriteLine("=== SHOP ===\n");
                 Console.WriteLine("[1] Clothes  [2] Horse Tack  [3] Supplies  [0] Back ");
@@ -51,6 +50,8 @@ namespace WesternStore
 
         private static void ShowAndAdd(Customer customer, List<Product> list)
         {
+
+            var currency = CurrencyHelper.CurrentCurrency;
             while (true)
             {
                 Console.Clear();
@@ -64,14 +65,16 @@ namespace WesternStore
                 {
                     var p = list[i];
                     string size = p is Clothes c ? c.Size : "";
-                    string price = p.Price.ToString("N0") + " kr.";
+                    double converted = CurrencyHelper.ConvertCurrency(p.Price, currency);
+                    string symbol = CurrencyHelper.GetSymbol(currency);
+                    string price = converted.ToString("N0") + " " + symbol;
 
                     Console.WriteLine(
                         $"{i + 1,3} | " +
                         $"{p.Name,-22} | " +
                         $"{p.Brand,-12} | " +
-                        $"{size,-6} | " + "" +
-                        $"{price,8}");
+                        $"{size,-4} | " + "" +
+                        $"{price,10}");
                     Console.WriteLine("----+------------------------+-----------------+--------+------------");
                 }
 
@@ -91,7 +94,6 @@ namespace WesternStore
                         continue;
                     }
                     if (choice < 1 || choice > list.Count) continue;
-
                     break;
                 }
 
@@ -107,7 +109,6 @@ namespace WesternStore
                     }
                     Console.WriteLine("Invalid, choose a number.");
                 }
-
 
                 if (amount >= 1)
                 {
@@ -182,12 +183,8 @@ namespace WesternStore
                 Console.Write("\nPress any key to continue...");
                 Console.ReadKey();
                 return customer;
-
             }
-
         }
-
-
 
     }
 }

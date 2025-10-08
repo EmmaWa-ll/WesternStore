@@ -1,11 +1,19 @@
 ﻿namespace WesternStore
 {
-    public class MenuService
+    public class MenuHelper
     {
         private readonly StoreHelper Store;
         private readonly List<Customer> Customers;
+        private Currency _currency;
 
-        public MenuService(StoreHelper store, List<Customer> customers)
+        public MenuHelper(StoreHelper store, List<Customer> customers, Currency currency)
+        {
+            Store = store;
+            Customers = customers;
+            _currency = CurrencyHelper.CurrentCurrency;
+        }
+
+        public MenuHelper(StoreHelper store, List<Customer> customers)
         {
             Store = store;
             Customers = customers;
@@ -64,6 +72,7 @@
                 Console.WriteLine("[1] Shop Products");
                 Console.WriteLine("[2] View Cart");
                 Console.WriteLine("[3] Check Out (buy)");
+                Console.WriteLine("[4] Change currency (SEK/EUR(USD)");
                 Console.WriteLine("[0] Log Out");
                 Console.WriteLine("-------------------------------------");
                 Console.Write("\nEnter choice: ");
@@ -80,6 +89,9 @@
                     case "3":
                         customer = StoreHelper.CheckOut(customer);
                         break;
+                    case "4":
+                        _currency = CurrencyHelper.ChangeCurrency(_currency);
+                        break;
                     case "0":
                         return;
                     default:
@@ -90,5 +102,7 @@
                 }
             }
         }
+
+
     }
 }

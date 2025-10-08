@@ -25,6 +25,10 @@ namespace WesternStore
             return Password == inputPW;
         }
 
+        public string GetPassword() => Password;
+
+        public abstract double CalculateDiscount(double total);
+
         public void AddToCart(Product p, int amount)
         {
             if (p == null || amount <= 0)
@@ -41,9 +45,7 @@ namespace WesternStore
             {
                 cart.Add(new CartItems(p, amount));
             }
-
         }
-
 
         public void ClearCart()
         {
@@ -73,19 +75,28 @@ namespace WesternStore
             sb.AppendLine($"{Name} (Pw: {Password})"); //AppendLine =
             sb.AppendLine($"Level: {LevelType} |  Discount: {DiscountRate * 100}%");
             Console.WriteLine("\nCart: ");
+            var currency = CurrencyHelper.CurrentCurrency;
+            string symbol = CurrencyHelper.GetSymbol(currency);
             sb.AppendLine(new string('-', 26));
 
 
             foreach (var item in cart)
             {
-                sb.AppendLine($"{item.Product.Name,-22} {item.Product.Price,6} kr x {item.Amount,2} = {item.Total(),6} kr.");
+                double convertedprice = CurrencyHelper.ConvertCurrency(item.Product.Price, currency);
+                double convertedTotal = CurrencyHelper.ConvertCurrency(item.Total(), currency);
+                sb.AppendLine($"{item.Product.Name,-22} {convertedprice,8:F2} {symbol} x {item.Amount,2} = {convertedTotal,8:F2} ");
             }
             sb.AppendLine(new string('-', 26));
-            sb.AppendLine($"Total: {Total()} kr");
-            double discounted = CalculateDiscount(Total());
-            sb.AppendLine($"Discounted totall: {discounted:F2}");
+            double total = Total();
+            double discounted = CalculateDiscount(total);
+
+            sb.AppendLine($"Total: {CurrencyHelper.ConvertCurrency(total, currency):F2} {symbol}");
+            sb.AppendLine($"Discounted total: {CurrencyHelper.ConvertCurrency(discounted, currency):F2} {symbol}");
+
+
             return sb.ToString();
         }
+
 
         public Customer(string name, string password)
         {
@@ -93,10 +104,6 @@ namespace WesternStore
             Password = password;
             cart = new List<CartItems>();
         }
-
-        public string GetPassword() => Password;
-
-        public abstract double CalculateDiscount(double total);
 
         public void AddSpent(double amount)
         {
@@ -110,12 +117,12 @@ namespace WesternStore
         {
             if (spent >= 10000)
                 return "Gold";
-            if (spent >= 5000)
+            else if (spent >= 5000)
                 return "Silver";
-            if (spent >= 2000)
+            else if (spent >= 2000)
                 return "Bronze";
-
-            return "Regular";
+            else
+                return "Regular";
         }
 
 
