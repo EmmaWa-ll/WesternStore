@@ -1,5 +1,4 @@
-﻿using System.Text;
-using WesternStore.CustomerLevel;
+﻿using WesternStore.CustomerLevel;
 using WesternStore.CustomerRanks;
 using WesternStore.Products;
 
@@ -14,7 +13,7 @@ namespace WesternStore
         public virtual double DiscountRate => 0.0;
         public virtual string LevelType => "Regular";
         public double TotalSpent { get; private set; }
-        public string CurrentLevel => TargetLevel(TotalSpent);
+        public string CurrentLevel => DecideLevel(TotalSpent);
 
 
         List<CartItems> cart = new List<CartItems>();
@@ -36,16 +35,26 @@ namespace WesternStore
                 return;
             }
 
-            var row = cart.FirstOrDefault(ci => ci.Product == p);
-            if (row != null)
+            CartItems itemInCart = null;
+            foreach (var item in cart)
             {
-                row.Add(amount);
+                if (item.Product == p)
+                {
+                    itemInCart = item;
+                    break;
+                }
+            }
+
+            if (itemInCart != null)
+            {
+                itemInCart.Add(amount);
             }
             else
             {
                 cart.Add(new CartItems(p, amount));
             }
         }
+
 
         public void ClearCart()
         {
@@ -71,30 +80,30 @@ namespace WesternStore
                 return $"{Name} (Pw: {Password}),  The Cart is empty!";
             }
 
-            var sb = new StringBuilder(); //StringBuilder = 
-            sb.AppendLine($"{Name} (Pw: {Password})"); //AppendLine =
-            sb.AppendLine($"Level: {LevelType} |  Discount: {DiscountRate * 100}%");
-            Console.WriteLine("\nCart: ");
-            var currency = CurrencyHelper.CurrentCurrency;
-            string symbol = CurrencyHelper.GetSymbol(currency);
-            sb.AppendLine(new string('-', 26));
-
+            Console.WriteLine($"{Name} (Pw: {Password})");
+            Console.WriteLine("\nCart: \n");
+            Console.WriteLine("---------------------------------------------------");
+            var currency = CurrencyHelper.CurrentCurrency;   //hämtar den valuta som används just nu
+            string symbol = CurrencyHelper.GetSymbol(currency); //hämtar rätt symbol för aktuell valuta 
 
             foreach (var item in cart)
             {
-                double convertedprice = CurrencyHelper.ConvertCurrency(item.Product.Price, currency);
-                double convertedTotal = CurrencyHelper.ConvertCurrency(item.Total(), currency);
-                sb.AppendLine($"{item.Product.Name,-22} {convertedprice,8:F2} {symbol} x {item.Amount,2} = {convertedTotal,8:F2} ");
+                double price = CurrencyHelper.ConvertCurrency(item.Product.Price, currency);
+                double totalItemPrice = CurrencyHelper.ConvertCurrency(item.Total(), currency);
+                Console.WriteLine($"{item.Product.Name,-20} {price:F2} {symbol} Amount: {item.Amount,2} Total: {totalItemPrice:F2} ");
             }
-            sb.AppendLine(new string('-', 26));
+            Console.WriteLine("---------------------------------------------------");
             double total = Total();
-            double discounted = CalculateDiscount(total);
-
-            sb.AppendLine($"Total: {CurrencyHelper.ConvertCurrency(total, currency):F2} {symbol}");
-            sb.AppendLine($"Discounted total: {CurrencyHelper.ConvertCurrency(discounted, currency):F2} {symbol}");
+            double discountedTotal = CalculateDiscount(total);
 
 
-            return sb.ToString();
+            Console.WriteLine($"Total: {CurrencyHelper.ConvertCurrency(total, currency):F2}");
+            Console.WriteLine($"After discount: {CurrencyHelper.ConvertCurrency(discountedTotal, currency):F2} {symbol}  ");
+
+
+            return string.Join("\n, lines");
+
+
         }
 
 
@@ -113,38 +122,48 @@ namespace WesternStore
             }
         }
 
-        public static string TargetLevel(double spent)
+        public static string DecideLevel(double spent)
         {
             if (spent >= 10000)
+            {
                 return "Gold";
+
+            }
             else if (spent >= 5000)
+            {
                 return "Silver";
+            }
             else if (spent >= 2000)
+            {
+
                 return "Bronze";
+            }
             else
+            {
                 return "Regular";
+            }
         }
 
 
         public static Customer UpgradeIfNeeded(Customer c)
         {
-            var target = TargetLevel(c.TotalSpent);
+            var newLevel = DecideLevel(c.TotalSpent);
 
-            if (target == c.LevelType)
+            if (newLevel == c.LevelType)
             {
                 return c;
             }
             Customer upgraded;
 
-            if (target == "Gold")
+            if (newLevel == "Gold")
             {
                 upgraded = new GoldCustomer(c.Name, c.GetPassword());
             }
-            if (target == "Silver")
+            if (newLevel == "Silver")
             {
                 upgraded = new SilverCustomer(c.Name, c.GetPassword());
             }
-            if (target == "Bronze")
+            if (newLevel == "Bronze")
             {
                 upgraded = new BronzeCustomer(c.Name, c.GetPassword());
             }
@@ -152,6 +171,7 @@ namespace WesternStore
             {
                 upgraded = new RegularCustomer(c.Name, c.GetPassword());
             }
+
             upgraded.TotalSpent = c.TotalSpent;
             return upgraded;
         }
