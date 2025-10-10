@@ -74,7 +74,7 @@
                 Console.WriteLine("[3] Check Out (buy)");
                 Console.WriteLine("[4] Change currency (SEK/EUR(USD)");
                 Console.WriteLine("[0] Log Out");
-                Console.WriteLine("-------------------------------------");
+                Console.WriteLine("-------------------------------------------");
                 Console.Write("\nEnter choice: ");
                 string? choice = Console.ReadLine();
 

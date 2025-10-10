@@ -11,6 +11,7 @@ namespace WesternStore
 
             var customers = FileManager.LoadCustomers();
 
+
             StoreHelper store = new StoreHelper();
 
             MenuHelper menuService = new MenuHelper(store, customers);

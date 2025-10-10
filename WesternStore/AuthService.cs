@@ -21,6 +21,7 @@ namespace WesternStore
 
             if (isRegistered)
             {
+                FileManager.SaveCustomers(customers);
                 Console.WriteLine("Customer created! ");
 
                 using (StreamWriter sw = new StreamWriter(FilePath, append: true))
@@ -42,9 +43,8 @@ namespace WesternStore
 
                 Console.Clear();
                 Console.WriteLine("== LogIn ==\n");
-
                 Console.Write("Name: ");
-                string inputName = Console.ReadLine();
+                string inputName = Console.ReadLine().Trim();
 
                 var customer = customers.FirstOrDefault(c => c.Name == inputName);
                 if (customer == null)
@@ -64,7 +64,7 @@ namespace WesternStore
                     continue;
                 }
                 Console.Write("Password: ");
-                string inputPW = Console.ReadLine();
+                string inputPW = Console.ReadLine().Trim();
 
                 if (!customer.VerifyPassword(inputPW))
                 {
